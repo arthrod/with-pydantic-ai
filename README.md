@@ -1,207 +1,104 @@
-# Pydantic AI Research Assistant with AG-UI Protocol
+# Basic Pydantic AI Agent with CopilotKit
 
-A comprehensive research assistant built with **Pydantic AI** and the official **AG-UI protocol** for real-time frontend-agent communication. This application demonstrates proper integration between a Python-based AI agent and a modern React frontend using CopilotKit.
+This is a simple demonstration of a Pydantic AI agent integrated with CopilotKit for real-time state management and UI updates.
 
-## 🏗️ Architecture
+## Features
 
-This application uses the official **AG-UI (Agent-User Interaction) Protocol** to enable real-time communication between:
+- **Basic Agent**: A simple AI assistant with deep thinking capabilities
+- **Real-time State Updates**: Watch the agent's state change in real-time
+- **Activity Logging**: See all agent actions and their timestamps
+- **Thinking Counter**: Track how many times the agent has thought deeply
 
-- **Backend**: Pydantic AI agent with AG-UI protocol support
-- **Frontend**: React + CopilotKit with AG-UI client integration
-- **Communication**: Real-time streaming via AG-UI events over HTTP
+## Setup
 
-### AG-UI Protocol Benefits
+### 1. Environment Variables
 
-✅ **Real-time streaming**: Token-by-token agent responses  
-✅ **State synchronization**: Live updates of agent progress  
-✅ **Structured communication**: Standardized event-based messaging  
-✅ **Framework agnostic**: Works with any frontend framework  
-✅ **No mock data**: All interactions use real agent state  
-
-## 🚀 Features
-
-- **Deep Research Workflow**: 6-step comprehensive research process
-- **Real-time Progress Tracking**: Live visualization of agent steps
-- **Web Search Integration**: Actual web searches using DuckDuckGo
-- **Content Analysis**: AI-powered information synthesis
-- **Fact Verification**: Cross-reference validation
-- **Transparent Process**: Full visibility into agent reasoning
-
-## 🛠️ Setup
-
-### Prerequisites
-
-- Python 3.9+
-- Node.js 18+
-- OpenAI API key
-
-### 1. Install Dependencies
+Create a `.env.local` file in the root directory:
 
 ```bash
-# Install all dependencies (includes backend setup)
+# OpenAI API Key (required)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Agent URL (defaults to localhost:8000)
+PYDANTIC_AI_AGENT_URL=http://localhost:8000
+```
+
+### 2. Install Dependencies
+
+```bash
 npm install
+# or
+yarn install
+# or
+pnpm install
 ```
 
-### 2. Environment Setup
+### 3. Start the Agent
 
-Create `.env` file in the root:
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-Create `agent/.env` file:
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-### 3. Run the Application
+In the `agent` directory:
 
 ```bash
-# Start both frontend and backend with AG-UI integration
+cd agent
+python agent.py
+```
+
+This will start the Pydantic AI agent on `http://localhost:8000`.
+
+### 4. Start the UI
+
+In the root directory:
+
+```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
 ```
 
-This starts:
-- **Backend**: Pydantic AI agent with AG-UI at `http://localhost:8000`
-- **Frontend**: Next.js with CopilotKit at `http://localhost:3000`
+This will start the Next.js application on `http://localhost:3000`.
 
-## 🔧 System Components
+## Testing the Agent
 
-### Backend Agent (`agent/agent.py`)
+1. Open `http://localhost:3000` in your browser
+2. You'll see a split-screen interface:
+   - Left panel: Chat interface
+   - Right panel: Agent state display
 
-```python
-# Pydantic AI agent with AG-UI protocol
-research_agent = Agent(
-    'openai:gpt-4o',
-    deps_type=StateDeps[ResearchState],
-    system_prompt="You are a comprehensive research assistant..."
-)
+3. Try asking the agent to think deeply about something:
+   - "Think deeply about the meaning of life"
+   - "Can you think deeply about artificial intelligence?"
+   - "Please think deeply about climate change"
 
-# Convert to AG-UI compatible FastAPI app
-app = research_agent.to_ag_ui(deps=StateDeps(ResearchState()))
-```
+4. Watch the right panel update in real-time:
+   - Thinking count increases
+   - New log entries appear
+   - Last thought updates
 
-**Research Tools Available:**
-- `start_research(query)` - Initialize research workflow
-- `deep_think_analyze_query()` - Cognitive analysis
-- `web_search(terms)` - Real web search via DuckDuckGo
-- `analyze_content()` - Content relevance analysis
-- `synthesize_information()` - Information synthesis
-- `verify_facts()` - Fact verification
-- `generate_final_output()` - Comprehensive report
+## Agent State
 
-### Frontend Integration (`src/app/api/copilotkit/route.ts`)
+The agent maintains a simple state with:
+- `thinking_count`: Number of deep thinking sessions
+- `last_thought`: The most recent topic the agent thought about
+- `logs`: Array of all agent actions with timestamps
 
-```typescript
-// AG-UI client connecting to Pydantic AI agent
-const runtime = new CopilotRuntime({
-  agents: {
-    "research_agent": new HttpAgent({url: "http://localhost:8000/"}),
-  }   
-});
-```
+## Architecture
 
-### Real-time State Management (`src/components/ChatInterface.tsx`)
+- **Backend**: Pydantic AI agent with AG-UI integration
+- **Frontend**: Next.js with CopilotKit for state management
+- **Communication**: HTTP-based agent communication via AG-UI protocol
 
-```typescript
-// AG-UI state integration - NO MOCK DATA
-const { state } = useCoAgent<ResearchState>({
-  name: "research_agent", // Matches backend agent
-  initialState: {
-    query: "",
-    steps: [],
-    search_results: [],
-    // ... real agent state
-  },
-});
-```
+## Next Steps
 
-## 📡 AG-UI Protocol Flow
+Once this basic setup is working, you can:
+1. Add more complex tools to the agent
+2. Implement more sophisticated state management
+3. Add user interactions with the state
+4. Build more complex workflows
 
-1. **User Input**: Message sent via CopilotKit chat
-2. **AG-UI Relay**: Frontend sends to `/api/copilotkit`
-3. **Agent Processing**: Pydantic AI executes research workflow
-4. **Real-time Events**: Agent streams state updates via AG-UI
-5. **Live Updates**: Frontend receives and displays progress
-6. **Final Result**: Complete research report delivered
+## Troubleshooting
 
-### Example Event Flow:
-```
-USER: "Research AI safety regulations"
-  ↓ AG-UI Protocol
-AGENT: StateSnapshotEvent(steps=[...])
-  ↓ Real-time streaming  
-UI: Updates progress sidebar
-  ↓ Continues...
-AGENT: Final research report
-  ↓ AG-UI Protocol
-UI: Displays complete results
-```
-
-## 🧪 Testing the Integration
-
-### 1. Verify Backend AG-UI Endpoint
-```bash
-curl -X GET http://localhost:8000/
-# Expected: "Method Not Allowed" (correct, POST endpoint)
-```
-
-### 2. Test Research Query
-Visit `http://localhost:3000` and ask:
-> "Research the latest developments in quantum computing"
-
-### 3. Observe Real-time Updates
-Watch the progress sidebar for live agent steps:
-- 🧠 Deep Think: Analyzing Query
-- 🔧 Tool Call: Web Search  
-- 📋 Subtask: Content Analysis
-- 🧠 Deep Think: Synthesis
-- 📋 Subtask: Fact Verification  
-- 🔧 Tool Call: Content Generation
-
-## 🔍 No Mock Data Policy
-
-This application contains **ZERO mock data**:
-
-❌ **Removed**: Static step definitions  
-❌ **Removed**: Hardcoded progress states  
-❌ **Removed**: Fake search results  
-❌ **Removed**: Simulated processing delays  
-
-✅ **Real**: Agent state from Pydantic AI  
-✅ **Real**: Live web search results  
-✅ **Real**: Dynamic step progression  
-✅ **Real**: Actual processing times  
-
-## 🐛 Troubleshooting
-
-### Backend Issues
-```bash
-cd agent && python agent.py
-# Should show: "Uvicorn running on http://0.0.0.0:8000"
-```
-
-### Frontend Issues
-```bash
-npm run dev:ui
-# Should show: "Ready - started server on 0.0.0.0:3000"
-```
-
-### AG-UI Connection Issues
-- Verify agent name matches: `"research_agent"`
-- Check CORS settings if needed
-- Ensure ports 3000 and 8000 are available
-
-## 📚 Learn More
-
-- [Pydantic AI Documentation](https://ai.pydantic.dev/)
-- [AG-UI Protocol Specification](https://docs.ag-ui.com/)
-- [CopilotKit Integration Guide](https://docs.copilotkit.ai/)
-
-## 🤝 Contributing
-
-This project demonstrates best practices for AG-UI protocol integration. Feel free to extend with additional research tools or frontend components while maintaining the AG-UI standard.
-
----
-
-**Built with Pydantic AI + AG-UI Protocol + CopilotKit**
+- Make sure both the agent (`:8000`) and UI (`:3000`) are running
+- Check that your OpenAI API key is valid
+- Look at the browser console for any errors
+- Check the agent logs for backend issues

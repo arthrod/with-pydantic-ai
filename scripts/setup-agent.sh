@@ -1,15 +1,28 @@
 #!/bin/bash
 
-# Navigate to the agent directory
-cd "$(dirname "$0")/../agent" || exit 1
+echo "Setting up Pydantic AI Agent..."
 
-# Create virtual environment if it doesn't exist
-if [ ! -d ".venv" ]; then
-  python3 -m venv .venv || python -m venv .venv
+# Create agent directory if it doesn't exist
+mkdir -p agent
+
+# Copy environment example if .env doesn't exist
+if [ ! -f "agent/.env" ]; then
+    if [ -f "agent/env_example.txt" ]; then
+        cp agent/env_example.txt agent/.env
+        echo "Created agent/.env from template"
+        echo "Please edit agent/.env and add your OpenAI API key"
+    else
+        echo "Error: env_example.txt not found"
+        exit 1
+    fi
+else
+    echo "agent/.env already exists"
 fi
 
-# Activate the virtual environment
-source .venv/bin/activate
+# Install Python dependencies
+echo "Installing Python dependencies..."
+pip install pydantic-ai ag-ui python-dotenv httpx ddgs beautifulsoup4
 
-# Install requirements using pip3 or pip
-(pip3 install -r requirements.txt || pip install -r requirements.txt)
+echo "Setup complete!"
+echo "To start the agent, run: ./scripts/run-agent.sh"
+echo "To start the frontend, run: npm run dev"

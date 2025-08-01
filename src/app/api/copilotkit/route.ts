@@ -4,27 +4,38 @@ import {
   copilotRuntimeNextJSAppRouterEndpoint,
 } from "@copilotkit/runtime";
 import { HttpAgent } from "@ag-ui/client";
+import OpenAI from "openai";
 import { NextRequest } from "next/server";
- 
-// Create the proper LLM adapter for CopilotKit components
-const serviceAdapter = new OpenAIAdapter();
 
-// Create the CopilotRuntime instance with the AG-UI integration
-// pointing to our Pydantic AI agent running on port 8000
-const runtime = new CopilotRuntime({
-  agents: {
-    // The agent name should match what's used in the frontend
-    "research_agent": new HttpAgent({url: "http://localhost:8000/"}),
-  }   
-});
- 
-// Build a Next.js API route that handles the CopilotKit runtime requests
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const llmAdapter = new OpenAIAdapter({ openai } as any);
+
 export const POST = async (req: NextRequest) => {
+  const searchParams = req.nextUrl.searchParams;
+  const agentType = searchParams.get("agentType") || "basic_agent";
+  
+  // Base URL for the Pydantic AI agent using standard AG-UI protocol
+  const baseUrl = process.env.PYDANTIC_AI_AGENT_URL || "http://localhost:8000";
+  
+  console.log(`Connecting to agent: ${agentType} at ${baseUrl}`);
+  
+  // Create runtime with the Pydantic AI agent using standard AG-UI protocol
+  const runtime = new CopilotRuntime({
+    agents: {
+      [agentType]: new HttpAgent({
+        url: baseUrl,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    },
+  });
+
   const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
-    runtime, 
-    serviceAdapter,
+    runtime,
+    serviceAdapter: llmAdapter,
     endpoint: "/api/copilotkit",
   });
- 
+
   return handleRequest(req);
 };

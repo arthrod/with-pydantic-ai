@@ -1,19 +1,10 @@
-# AI Research Agent Environment Configuration
-# Copy this file to .env and fill in your API keys
+# Pydantic AI Agent Environment Configuration
 
-# Required: OpenAI API Key for the language model
-# Get your key from: https://platform.openai.com/api-keys
+# OpenAI API Key (required for the agent to function)
 OPENAI_API_KEY=your_openai_api_key_here
 
-# Optional: Tavily API Key for enhanced web search capabilities  
-# Get your key from: https://tavily.com (currently using DuckDuckGo as fallback)
-TAVILY_API_KEY=your_tavily_api_key_here
+# Optional: Customize the agent URL (defaults to http://localhost:8000)
+PYDANTIC_AI_AGENT_URL=http://localhost:8000
 
-# Optional: Set to 1 to enable debug logging
-PYDANTIC_AI_DEBUG=0
-
-# Optional: Custom model configuration (default: gpt-4o)
-# OPENAI_MODEL=gpt-4o-mini
-
-# Optional: Custom port for the agent server (default: 8000)
-# AGENT_PORT=8000 
+# Optional: LangSmith API Key for tracing (if using LangSmith)
+LANGSMITH_API_KEY=your_langsmith_api_key_here 

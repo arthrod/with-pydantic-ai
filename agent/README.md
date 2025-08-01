@@ -1,213 +1,124 @@
-# AI Research Agent with Pydantic AI
+# Pydantic AI Agent for Research Helper
 
-A comprehensive research assistant that conducts thorough investigations with complete transparency of the thought process, built using Pydantic AI framework.
+This agent is designed to work seamlessly with the Research Helper frontend, providing comprehensive research capabilities with real-time state management and interactive features.
 
 ## Features
 
-🧠 **Deep Thinking Analysis** - Breaks down complex research queries into components
-🔍 **Web Search Integration** - Real-time web search using DuckDuckGo
-📊 **Content Analysis** - Evaluates information for relevance and accuracy  
-🔗 **Information Synthesis** - Combines insights from multiple sources
-✅ **Fact Verification** - Cross-references claims across authoritative sources
-📄 **Comprehensive Reporting** - Generates detailed research summaries
-
-## Architecture
-
-The agent implements a structured 6-step research workflow:
-
-1. **Deep Think: Query Analysis** - Cognitive reasoning and context analysis
-2. **Tool Call: Web Search** - Searches for relevant information
-3. **Subtask: Content Analysis** - Analyzes gathered information for relevance
-4. **Deep Think: Synthesis** - Synthesizes information into coherent insights
-5. **Subtask: Fact Verification** - Cross-references and validates findings
-6. **Tool Call: Content Generation** - Creates comprehensive research output
+- **CoAgent State Management**: Real-time state synchronization between frontend and backend
+- **State Rendering**: Live UI updates based on agent state changes
+- **Copilot Actions**: Interactive actions with user confirmation workflows
+- **Resource Management**: Add, edit, and delete research resources
+- **Research Workflow**: Comprehensive research process with multiple stages
+- **Progress Tracking**: Real-time progress updates with detailed logging
 
 ## Setup
 
-### 1. Environment Setup
+1. **Install Dependencies**:
+   ```bash
+   pip install pydantic-ai ag-ui python-dotenv httpx ddgs beautifulsoup4
+   ```
 
-Create a `.env` file in the agent directory:
+2. **Environment Configuration**:
+   ```bash
+   cp env_example.txt .env
+   ```
+   
+   Edit `.env` and add your OpenAI API key:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
 
-```bash
-# Required
-OPENAI_API_KEY=your_openai_api_key_here
+3. **Run the Agent**:
+   ```bash
+   python agent.py
+   ```
+   
+   The agent will start on `http://localhost:8000`
 
-# Optional (for enhanced search capabilities)
-TAVILY_API_KEY=your_tavily_api_key_here
+## Agent Tools
+
+### Research Tools
+- `start_research(query: str)`: Initialize research with a query
+- `deep_think_analyze_query()`: Analyze and break down the research question
+- `web_search(search_terms: List[str])`: Perform web searches for information
+- `analyze_content()`: Analyze gathered information for relevance
+- `synthesize_information()`: Create coherent insights from data
+- `verify_facts()`: Cross-reference and validate findings
+- `generate_final_output()`: Create comprehensive research report
+
+### Resource Management Tools
+- `add_resource(url: str, title: str, description: str)`: Add research resources
+- `delete_resources(urls: List[str])`: Remove resources (with confirmation)
+- `update_resource(original_url: str, new_url: str, title: str, description: str)`: Modify resources
+
+### Status Tools
+- `get_research_status()`: Get current research status and results
+
+## State Structure
+
+The agent maintains a comprehensive state that includes:
+
+```python
+class AgentState(BaseModel):
+    model: str = "openai"
+    research_question: str = ""
+    report: str = ""
+    resources: List[Resource] = []
+    logs: List[LogEntry] = []
+    query: str = ""
+    steps: List[Dict[str, Any]] = []
+    current_step_index: int = 0
+    search_results: List[Dict[str, Any]] = []
+    content_analysis: str = ""
+    synthesis: str = ""
+    fact_verification: str = ""
+    final_output: str = ""
+    completed: bool = False
 ```
 
-### 2. Install Dependencies
+## Frontend Integration
 
-```bash
-cd agent
-pip install -r requirements.txt
-```
+The agent is designed to work with the Research Helper frontend, which provides:
 
-### 3. Test the Agent
-
-```bash
-python test_agent.py
-```
-
-### 4. Run the Agent Server
-
-```bash
-python agent.py
-```
-
-The agent will be available at `http://localhost:8000`
-
-## Integration with Frontend
-
-The agent integrates with the frontend via CopilotKit's AG-UI framework. The frontend expects:
-
-- **Real-time step updates** via `StateSnapshotEvent`
-- **Progress tracking** with step statuses: pending → active → completed
-- **Structured research workflow** matching the 6-step process
-- **Detailed step information** with timestamps and completion details
+- **Real-time State Updates**: Live synchronization of agent state
+- **Interactive UI**: Resource management with add/edit/delete capabilities
+- **Progress Tracking**: Visual progress indicators for research steps
+- **Chat Interface**: Natural language interaction with the agent
 
 ## API Endpoints
 
-When running, the agent exposes these AG-UI endpoints:
+The agent exposes the following endpoints:
 
-- `GET /` - Agent information and health check
-- `POST /agents/execute` - Execute research workflow
-- `POST /agents/state` - Get current research state
-
-## Research Workflow
-
-### Step Types
-
-- **thinking** 🧠 - Deep cognitive analysis and reasoning
-- **tool** 🔧 - External tool execution (search, generation)
-- **subtask** 📋 - Specialized analysis tasks
-- **output** 📄 - Final output generation
-
-### State Management
-
-The agent maintains comprehensive state including:
-
-```python
-class ResearchState:
-    query: str                    # Research query
-    steps: List[ResearchStep]     # Workflow steps with progress
-    current_step_index: int       # Current step position
-    search_results: List[Dict]    # Web search results
-    content_analysis: str         # Analysis of gathered content
-    synthesis: str                # Synthesized insights
-    fact_verification: str        # Verification status
-    final_output: str            # Complete research report
-    completed: bool              # Workflow completion status
-```
-
-## Tools Available
-
-### Research Tools
-- `start_research(query)` - Initialize research workflow
-- `deep_think_analyze_query()` - Analyze and break down the query
-- `web_search(search_terms)` - Perform web search with DuckDuckGo
-- `analyze_content()` - Analyze search results for relevance
-- `synthesize_information()` - Create coherent insights from data
-- `verify_facts()` - Cross-reference and validate findings
-- `generate_final_output()` - Create comprehensive research report
-
-### Utility Tools
-- `get_research_status()` - Get current research state and progress
-
-## Error Handling
-
-The agent includes robust error handling:
-
-- **Fallback search data** if web search fails
-- **Graceful degradation** for missing dependencies
-- **Comprehensive logging** for debugging
-- **State recovery** for interrupted workflows
+- `POST /copilotkit`: Main CopilotKit integration endpoint
+- `GET /docs`: Interactive API documentation (Swagger UI)
 
 ## Customization
 
-### Adding New Search Providers
+To customize the agent for different use cases:
 
-To add additional search providers, implement new tools following this pattern:
+1. **Modify the State Model**: Update `AgentState` to include additional fields
+2. **Add New Tools**: Create new `@research_agent.tool` functions
+3. **Update System Prompt**: Modify the `research_instructions` function
+4. **Extend Workflow**: Add new research steps to the workflow
 
-```python
-@research_agent.tool
-async def custom_search(ctx: RunContext[StateDeps[ResearchState]], query: str) -> StateSnapshotEvent:
-    # Your search implementation
-    return StateSnapshotEvent(
-        type=EventType.STATE_SNAPSHOT,
-        snapshot=ctx.deps.state
-    )
-```
+## Environment Variables
 
-### Modifying Workflow Steps
-
-Customize the research workflow by modifying `initialize_research_steps()`:
-
-```python
-def initialize_research_steps(query: str) -> List[ResearchStep]:
-    return [
-        ResearchStep(
-            id="custom-step",
-            title="Custom Analysis",
-            description="Your custom step description",
-            type="thinking"  # or "tool", "subtask", "output"
-        ),
-        # ... other steps
-    ]
-```
-
-## Performance
-
-- **Search Results**: Limited to 10 results per query for optimal performance
-- **Concurrent Searches**: Supports up to 3 parallel search terms
-- **Response Time**: Typical workflow completion: 10-15 seconds
-- **Memory Usage**: Lightweight state management with structured data
+- `OPENAI_API_KEY`: Required for the language model
+- `PYDANTIC_AI_AGENT_URL`: Custom agent URL (default: http://localhost:8000)
+- `LANGSMITH_API_KEY`: Optional for tracing and monitoring
 
 ## Troubleshooting
 
-### Common Issues
+1. **Agent not starting**: Check that your OpenAI API key is valid
+2. **Frontend connection issues**: Ensure the agent is running on the correct port
+3. **State synchronization problems**: Verify the state model matches between frontend and backend
 
-1. **Missing OpenAI API Key**
-   ```
-   Error: OpenAI API key not configured
-   Solution: Add OPENAI_API_KEY to your .env file
-   ```
+## Development
 
-2. **Search Failures**
-   ```
-   Error: DuckDuckGo search failed
-   Solution: Agent falls back to mock data automatically
-   ```
+The agent uses Pydantic AI and AG-UI for:
+- Type-safe state management
+- Real-time UI updates
+- Tool function definitions
+- System prompt management
 
-3. **Port Already in Use**
-   ```
-   Error: Port 8000 already in use
-   Solution: Kill existing process or change port in agent.py
-   ```
-
-### Debug Mode
-
-Run with debug logging:
-
-```bash
-PYDANTIC_AI_DEBUG=1 python agent.py
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For questions and support:
-- Check the [Pydantic AI Documentation](https://ai.pydantic.dev/)
-- Review the test suite in `test_agent.py`
-- Examine the frontend integration in `src/app/api/copilotkit/route.ts` 
+For more information, see the [Pydantic AI documentation](https://github.com/pydantic/pydantic-ai). 

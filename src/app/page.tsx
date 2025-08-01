@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
-import { NewResearchInterface } from "@/components/NewResearchInterface";
+import { CopilotKit } from "@copilotkit/react-core";
+import Main from "./Main";
 
 export default function Home() {
+  // Simple configuration for Pydantic AI agent
+  const runtimeUrl = "/api/copilotkit";
+
   return (
-    <div className="h-screen">
-      <NewResearchInterface />
-    </div>
+    <CopilotKit runtimeUrl={runtimeUrl} showDevConsole={false}>
+      <Main />
+    </CopilotKit>
   );
 }
