@@ -1,0 +1,19 @@
+{
+  "title": "AutoGen2",
+  "root": true,
+  "pages": [
+    "index",
+    "---Getting Started---",
+    "quickstart",
+    "...shared-guides",
+    "agentic-chat-ui",
+    "human-in-the-loop",
+    "frontend-actions",
+    "---Learn---",
+    "...concepts",    
+    "---Troubleshooting Copilots---",
+    "...troubleshooting",
+    "---Other---",
+    "...(other)"
+  ]
+}
