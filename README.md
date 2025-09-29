@@ -4,9 +4,10 @@ This is a starter template for building AI agents using [PydanticAI](https://ai.
 
 ## Prerequisites
 
-- Node.js 18+ 
-- Python 3.8+
 - OpenAI API Key (for the PydanticAI agent)
+- Python 3.12+
+- uv
+- Node.js 20+ 
 - Any of the following package managers:
   - pnpm (recommended)
   - npm
@@ -32,33 +33,23 @@ yarn install
 bun install
 ```
 
-2. Install Python dependencies for the PydanticAI agent:
-```bash
-# Using pnpm
-pnpm install:agent
-
-# Using npm
-npm run install:agent
-
-# Using yarn
-yarn install:agent
-
-# Using bun
-bun run install:agent
-```
-
-> **Note:** This will automatically setup a `.venv` (virtual environment) inside the `agent` directory.  
+> **Note:** This will automatically setup the Python environment as well.
 >
-> To activate the virtual environment manually, you can run:
-> ```bash
-> source agent/.venv/bin/activate
+> If you have manual isseus, you can run:
+>
+> ```sh
+> npm run install:agent
 > ```
 
 
 3. Set up your OpenAI API key:
-```bash
-export OPENAI_API_KEY="your-openai-api-key-here"
+
+Create a `.env` file inside the `agent` folder with the following content:
+
 ```
+OPENAI_API_KEY=sk-...your-openai-key-here...
+```
+
 
 4. Start the development server:
 ```bash
@@ -101,7 +92,6 @@ The main UI component is in `src/app/page.tsx`. You can:
 - [CopilotKit Documentation](https://docs.copilotkit.ai) - Explore CopilotKit's capabilities
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API
 
-
 ## Contributing
 
 Feel free to submit issues and enhancement requests! This starter is designed to be easily extensible.
@@ -122,5 +112,6 @@ If you see "I'm having trouble connecting to my tools", make sure:
 If you encounter Python import errors:
 ```bash
 cd agent
-pip install -r requirements.txt
+uv sync
+uv run src/main.py
 ```
