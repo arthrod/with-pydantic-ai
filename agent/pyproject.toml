@@ -11,3 +11,9 @@ dependencies = [
     "python-dotenv",
     "logfire>=4.10.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest<9",
+    "pytest-asyncio<1.0",
+]
