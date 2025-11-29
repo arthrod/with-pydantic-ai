@@ -2,3 +2,8 @@
 export type AgentState = {
   proverbs: string[];
 }
+
+// Default state factory for creating initial agent state
+export const createDefaultAgentState = (): AgentState => ({
+  proverbs: [],
+})
